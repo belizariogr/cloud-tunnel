@@ -1,0 +1,5 @@
+# Purpose
+Shared domain and IPC types.
+
+# API Catalog
+- TunnelView, AuthState, AppSettings, CreateTunnelInput, UpdateTunnelInput, IpcChannels

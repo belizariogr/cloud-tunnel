@@ -1,0 +1,5 @@
+# Purpose
+Spawn/kill cloudflared child processes per tunnel id.
+
+# API Catalog
+- start(tunnelId, token), stop, stopAll, getStatus, listRunning

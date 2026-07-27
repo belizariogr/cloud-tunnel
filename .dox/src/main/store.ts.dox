@@ -1,0 +1,6 @@
+# Purpose
+Persist settings, encrypted tokens, tunnel prefs under userData.
+
+# API Catalog
+- get/updateSettings, setApiToken, setOAuthTokens, getAccessToken
+- set/getTunnelPrefs, set/getTunnelToken

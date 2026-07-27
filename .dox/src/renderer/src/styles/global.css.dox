@@ -1,0 +1,5 @@
+# Purpose
+Global theme tokens and layout styles (English UI).
+
+# Local Contracts
+- Components use CSS variables from here — no loose hex in TSX

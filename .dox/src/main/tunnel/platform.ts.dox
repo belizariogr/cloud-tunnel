@@ -1,0 +1,5 @@
+# Purpose
+Pure platform/arch key helpers (no Electron import).
+
+# API Catalog
+- cloudflaredPlatformKey, cloudflaredBinaryName, BUNDLED_CLOUDFLARED_VERSION

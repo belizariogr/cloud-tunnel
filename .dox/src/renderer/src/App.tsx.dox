@@ -1,0 +1,5 @@
+# Purpose
+Root router shell; auth gate; tunnel subscription.
+
+# API Catalog
+- App — loads auth, routes Login vs shell

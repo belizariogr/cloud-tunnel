@@ -1,0 +1,5 @@
+# Purpose
+Register ipcMain handlers for renderer bridge.
+
+# API Catalog
+- registerIpc(service) — bind all auth/settings/tunnels channels

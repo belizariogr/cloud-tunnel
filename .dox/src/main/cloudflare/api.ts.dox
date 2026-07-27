@@ -1,0 +1,7 @@
+# Purpose
+Cloudflare REST wrappers + ingress helpers.
+
+# API Catalog
+- listAccounts, listZones, listTunnels, createTunnel, deleteTunnel
+- get/putTunnelConfiguration, getTunnelToken, deleteTunnelConnections
+- DNS CNAME helpers; parseIngress; buildServiceUrl

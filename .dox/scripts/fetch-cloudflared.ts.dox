@@ -1,0 +1,5 @@
+# Purpose
+Download pinned cloudflared release assets into resources/.
+
+# API Catalog
+- default: current platform; --all all platforms; --force redownload

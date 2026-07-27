@@ -1,0 +1,8 @@
+# Purpose
+Orchestrates auth, Cloudflare sync, activate/takeover, local prefs.
+
+# API Catalog
+- loginOAuth / loginApiToken / logout
+- listTunnels / createTunnel / updateTunnel / deleteTunnel
+- activateTunnel(tunnelId, takeover) — throws TAKEOVER_REQUIRED if remote connectors and !takeover
+- deactivateTunnel / restoreOnLaunch

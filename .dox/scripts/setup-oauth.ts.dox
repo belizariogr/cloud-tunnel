@@ -1,0 +1,6 @@
+# Purpose
+Publisher one-time OAuth Client ID capture; end users never run this.
+
+# API Catalog
+- setup-oauth.ts — opens Cloudflare OAuth clients page, writes resources/oauth-client.json
+- load-oauth-client-id.ts — read Client ID for electron-vite `define` embed

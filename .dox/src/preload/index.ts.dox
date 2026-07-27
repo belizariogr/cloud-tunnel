@@ -1,0 +1,5 @@
+# Purpose
+Expose CloudTunnelApi on window.cloudTunnel.
+
+# API Catalog
+- Mirrors IPC invoke channels + onTunnelsChanged / onAuthChanged subscriptions

@@ -1,0 +1,5 @@
+# Purpose
+Resolve packaged/dev cloudflared path; chmod on unix.
+
+# API Catalog
+- getCloudflaredBinaryPath, ensureCloudflaredExecutable, getBundledCloudflaredVersion

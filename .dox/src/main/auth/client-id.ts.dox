@@ -1,0 +1,6 @@
+# Purpose
+Resolve publisher OAuth Client ID (never an end-user field).
+
+# API Catalog
+- resolveOAuthClientId — builtin → resources/oauth-client.json → env
+- isOAuthConfigured — whether Sign in with Cloudflare can run

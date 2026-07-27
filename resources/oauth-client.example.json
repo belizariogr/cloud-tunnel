@@ -1,0 +1,11 @@
+{
+  "clientId": "PASTE_YOUR_CLOUDFLARE_OAUTH_CLIENT_ID_HERE",
+  "scopes": [],
+  "recommendedScopes": [
+    "account.read",
+    "zone.read",
+    "dns.write",
+    "cloudflare-tunnel.read",
+    "cloudflare-tunnel.write"
+  ]
+}

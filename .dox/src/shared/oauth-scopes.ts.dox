@@ -1,0 +1,5 @@
+# Purpose
+Documented Cloudflare OAuth scope ids for Cloud Tunnel (dot-delimited).
+
+# API Catalog
+- REQUIRED_OAUTH_SCOPES — account.read, zone.read, dns.write, cloudflare-tunnel.read/write

@@ -1,0 +1,5 @@
+# Purpose
+Renderer entry: mount React app with HashRouter.
+
+# API Catalog
+- bootstrap — `createRoot(...).render(<App />)`

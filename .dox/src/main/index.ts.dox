@@ -1,0 +1,6 @@
+# Purpose
+App entry: BrowserWindow, tray, lifecycle, restore-on-launch.
+
+# API Catalog
+- createWindow — create main window; hide on close (tray)
+- createTray / updateTrayMenu — tray icon + quick toggles

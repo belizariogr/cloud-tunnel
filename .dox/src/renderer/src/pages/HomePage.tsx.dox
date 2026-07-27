@@ -1,0 +1,5 @@
+# Purpose
+Tunnel list, activate toggle, takeover modal.
+
+# API Catalog
+- HomePage — refresh, toggle, delete, takeover confirm

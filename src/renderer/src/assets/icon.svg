@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="48" x2="448" y2="472" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF9A3D"/>
+      <stop offset="0.5" stop-color="#F6821F"/>
+      <stop offset="1" stop-color="#D96A0C"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="100" y1="70" x2="300" y2="280" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="url(#bg)"/>
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="url(#shine)"/>
+  <!-- Concentric tunnel -->
+  <circle cx="256" cy="262" r="118" stroke="#FFF8F0" stroke-width="26"/>
+  <circle cx="256" cy="262" r="72" stroke="#FFE8CC" stroke-width="22"/>
+  <circle cx="256" cy="262" r="28" fill="#FFF8F0"/>
+  <!-- Ingress / egress -->
+  <path d="M78 262 H138" stroke="#FFF8F0" stroke-width="26" stroke-linecap="round"/>
+  <path d="M374 262 H414" stroke="#FFF8F0" stroke-width="26" stroke-linecap="round"/>
+  <path
+    d="M400 220 L448 262 L400 304"
+    stroke="#FFF8F0"
+    stroke-width="26"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+</svg>

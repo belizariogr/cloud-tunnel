@@ -1,0 +1,5 @@
+# Purpose
+OAuth / API token login.
+
+# API Catalog
+- LoginPage — saves client id, invokes login

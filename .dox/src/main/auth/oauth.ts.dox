@@ -1,0 +1,6 @@
+# Purpose
+OAuth Authorization Code + PKCE via system browser + loopback.
+
+# API Catalog
+- loginWithOAuth(clientId) — PKCE + token exchange
+- refreshOAuthToken(clientId, refreshToken)

@@ -1,0 +1,7 @@
+# Purpose
+Shared OAuth constants and Client ID priority helper (publisher embed).
+
+# API Catalog
+- OAUTH_REDIRECT_URI — loopback callback URL
+- getBuiltinOAuthClientId — value baked by electron-vite define
+- pickOAuthClientId — priority: builtin → file → env
