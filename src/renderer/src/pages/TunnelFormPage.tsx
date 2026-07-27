@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { TunnelProtocol, TunnelView, ZoneInfo } from '@shared/types'
 
@@ -13,47 +13,64 @@ export default function TunnelFormPage({
 }: Props): React.JSX.Element {
   const { tunnelId } = useParams()
   const navigate = useNavigate()
-  const existing = useMemo(
-    () => tunnels.find((t) => t.tunnelId === tunnelId),
-    [tunnels, tunnelId]
-  )
   const isEdit = Boolean(tunnelId)
+  const existing = tunnels.find((t) => t.tunnelId === tunnelId)
 
   const [zones, setZones] = useState<ZoneInfo[]>([])
-  const [name, setName] = useState(existing?.name ?? '')
+  const [name, setName] = useState('')
   const [zoneId, setZoneId] = useState('')
   const [subdomain, setSubdomain] = useState('')
-  const [localHost, setLocalHost] = useState(existing?.localHost ?? 'localhost')
-  const [localPort, setLocalPort] = useState(existing?.localPort ?? 8080)
-  const [protocol, setProtocol] = useState<TunnelProtocol>(
-    existing?.protocol ?? 'http'
-  )
+  const [localHost, setLocalHost] = useState('localhost')
+  const [localPort, setLocalPort] = useState(8080)
+  const [protocol, setProtocol] = useState<TunnelProtocol>('http')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Prevent live tunnel refreshes from overwriting what the user is typing.
+  const hydratedTunnelId = useRef<string | null>(null)
+  const dnsHydratedFor = useRef<string | null>(null)
 
   useEffect(() => {
     void window.cloudTunnel.listZones().then((z) => {
       setZones(z)
-      if (z[0] && !zoneId) setZoneId(z[0].id)
+      setZoneId((current) => current || z[0]?.id || '')
     })
   }, [])
 
   useEffect(() => {
-    if (!existing) return
+    hydratedTunnelId.current = null
+    dnsHydratedFor.current = null
+    if (!tunnelId) {
+      setName('')
+      setSubdomain('')
+      setLocalHost('localhost')
+      setLocalPort(8080)
+      setProtocol('http')
+      setError(null)
+    }
+  }, [tunnelId])
+
+  useEffect(() => {
+    if (!isEdit || !existing) return
+    if (hydratedTunnelId.current === existing.tunnelId) return
+    hydratedTunnelId.current = existing.tunnelId
     setName(existing.name)
     setLocalHost(existing.localHost)
     setLocalPort(existing.localPort)
     setProtocol(existing.protocol)
-    if (existing.publicHostname) {
-      const zone = zones.find((z) => existing.publicHostname!.endsWith(z.name))
-      if (zone) {
-        setZoneId(zone.id)
-        const sub = existing.publicHostname
-          .slice(0, -(zone.name.length + 1))
-          .replace(/\.$/, '')
-        setSubdomain(sub)
-      }
-    }
+  }, [isEdit, existing])
+
+  useEffect(() => {
+    if (!existing?.publicHostname || zones.length === 0) return
+    if (dnsHydratedFor.current === existing.tunnelId) return
+    const zone = zones.find((z) => existing.publicHostname!.endsWith(z.name))
+    if (!zone) return
+    dnsHydratedFor.current = existing.tunnelId
+    setZoneId(zone.id)
+    const sub = existing.publicHostname
+      .slice(0, -(zone.name.length + 1))
+      .replace(/\.$/, '')
+    setSubdomain(sub)
   }, [existing, zones])
 
   const selectedZone = zones.find((z) => z.id === zoneId)
@@ -116,12 +133,17 @@ export default function TunnelFormPage({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="my-app"
+            autoComplete="off"
+            spellCheck={false}
           />
         </label>
 
         <label className="field">
           Zone
           <select value={zoneId} onChange={(e) => setZoneId(e.target.value)}>
+            {zones.length === 0 ? (
+              <option value="">Loading zones…</option>
+            ) : null}
             {zones.map((z) => (
               <option key={z.id} value={z.id}>
                 {z.name}
@@ -136,12 +158,14 @@ export default function TunnelFormPage({
             value={subdomain}
             onChange={(e) => setSubdomain(e.target.value)}
             placeholder="app"
+            autoComplete="off"
+            spellCheck={false}
           />
         </label>
 
         <label className="field span-2">
           Public hostname
-          <input className="mono" value={hostname} readOnly />
+          <input className="mono" value={hostname} readOnly tabIndex={-1} />
         </label>
 
         <label className="field">
@@ -161,6 +185,8 @@ export default function TunnelFormPage({
             value={localHost}
             onChange={(e) => setLocalHost(e.target.value)}
             placeholder="localhost"
+            autoComplete="off"
+            spellCheck={false}
           />
         </label>
 

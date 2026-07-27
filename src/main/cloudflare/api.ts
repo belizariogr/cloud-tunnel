@@ -116,6 +116,22 @@ export async function createTunnel(
   })
 }
 
+export async function renameTunnel(
+  token: string,
+  accountId: string,
+  tunnelId: string,
+  name: string
+): Promise<CfTunnel> {
+  return cfFetch<CfTunnel>(
+    token,
+    `/accounts/${accountId}/cfd_tunnel/${tunnelId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ name })
+    }
+  )
+}
+
 export async function deleteTunnel(
   token: string,
   accountId: string,

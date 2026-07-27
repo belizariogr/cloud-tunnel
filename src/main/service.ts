@@ -320,6 +320,14 @@ export class AppService {
     }
     this.store.setTunnelPrefs(prefs)
 
+    const nextName = input.name?.trim()
+    if (nextName) {
+      const current = this.tunnelsCache.find((t) => t.tunnelId === input.tunnelId)
+      if (!current || current.name !== nextName) {
+        await cf.renameTunnel(token, accountId, input.tunnelId, nextName)
+      }
+    }
+
     if (input.hostname) {
       const service = cf.buildServiceUrl(
         input.protocol,
