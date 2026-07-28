@@ -178,3 +178,4 @@ Default section order:
 | `scripts/` | [`.dox/scripts/AGENTS.md`](.dox/scripts/AGENTS.md) | Build/fetch scripts |
 | `resources/` | [`.dox/resources/AGENTS.md`](.dox/resources/AGENTS.md) | Icons and cloudflared binaries |
 | `docs/` | [`.dox/docs/AGENTS.md`](.dox/docs/AGENTS.md) | Planning docs |
+| `.github/` | [`.dox/.github/AGENTS.md`](.dox/.github/AGENTS.md) | GitHub Actions CI / release |

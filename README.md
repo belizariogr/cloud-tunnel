@@ -57,6 +57,22 @@ bun run typecheck
 bun run dist
 ```
 
+## CI / Releases
+
+- **Pull requests** → [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `typecheck` + `bun test`.
+- **Push to `main`** → [`.github/workflows/release.yml`](.github/workflows/release.yml) builds macOS, Windows, and Linux installers and publishes a GitHub Release (`v{version}-main.{run_number}`).
+
+Optional repository secrets:
+
+| Secret | Purpose |
+|--------|---------|
+| `CLOUD_TUNNEL_OAUTH_CLIENT_ID` | Embeds Cloudflare OAuth Client ID in CI builds |
+| `MAC_CSC_LINK` / `MAC_CSC_KEY_PASSWORD` | macOS code signing (base64 `.p12`) |
+| `APPLE_ID` / `APPLE_APP_SPECIFIC_PASSWORD` / `APPLE_TEAM_ID` | macOS notarization |
+| `WIN_CSC_LINK` / `WIN_CSC_KEY_PASSWORD` | Windows code signing (base64 `.pfx`) |
+
+Without signing secrets, installers are still published (unsigned).
+
 ### API token fallback
 
 Login screen still offers **Use API Token instead** for emergencies.

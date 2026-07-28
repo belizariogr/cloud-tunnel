@@ -3,6 +3,10 @@ productName: Cloud Tunnel
 directories:
   buildResources: resources
   output: release
+publish:
+  provider: github
+  # Releases are created by `.github/workflows/release.yml` (not electron-builder).
+  releaseType: release
 files:
   - out/**/*
   - package.json

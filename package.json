@@ -7,6 +7,10 @@
     "name": "Belizário Ribeiro",
     "email": "belizariogr@gmail.com"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/belizariogr/cloud-tunnel.git"
+  },
   "license": "MIT",
   "private": true,
   "type": "module",

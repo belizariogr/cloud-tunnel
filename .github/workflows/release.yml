@@ -1,0 +1,171 @@
+# Build macOS / Windows / Linux installers and publish a GitHub Release
+# on every push to main (including merged PRs).
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Compute release version
+        id: meta
+        run: |
+          BASE="$(bun -e 'console.log((await Bun.file("package.json").json()).version)')"
+          VERSION="${BASE}-main.${{ github.run_number }}"
+          TAG="v${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Release version: ${VERSION} (tag ${TAG})"
+
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Test
+        run: bun test
+
+  build:
+    needs: [prepare, quality]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            platform: mac
+            artifact_globs: |
+              release/*.dmg
+              release/*.zip
+              release/*.blockmap
+              release/latest-mac.yml
+          - os: windows-latest
+            platform: win
+            artifact_globs: |
+              release/*.exe
+              release/*.blockmap
+              release/latest.yml
+          - os: ubuntu-latest
+            platform: linux
+            artifact_globs: |
+              release/*.AppImage
+              release/*.deb
+              release/latest-linux.yml
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Set package version
+        shell: bash
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          bun -e '
+            const pkg = await Bun.file("package.json").json()
+            pkg.version = process.env.VERSION
+            await Bun.write("package.json", JSON.stringify(pkg, null, 2) + "\n")
+            console.log("package.json version →", pkg.version)
+          '
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Generate icons
+        run: bun run generate:icons
+
+      - name: Fetch cloudflared + build
+        env:
+          CLOUD_TUNNEL_OAUTH_CLIENT_ID: ${{ secrets.CLOUD_TUNNEL_OAUTH_CLIENT_ID }}
+        run: bun run build
+
+      - name: Package (${{ matrix.platform }})
+        shell: bash
+        env:
+          # Unsigned CI builds are fine until signing secrets exist.
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+        run: |
+          # Empty CSC_LINK breaks electron-builder path resolution — only export when set.
+          if [ -z "${CSC_LINK:-}" ]; then
+            unset CSC_LINK CSC_KEY_PASSWORD
+          else
+            unset CSC_IDENTITY_AUTO_DISCOVERY
+          fi
+          if [ -z "${WIN_CSC_LINK:-}" ]; then
+            unset WIN_CSC_LINK WIN_CSC_KEY_PASSWORD
+          fi
+          bunx electron-builder --${{ matrix.platform }} --publish never
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-tunnel-${{ matrix.platform }}
+          path: ${{ matrix.artifact_globs }}
+          if-no-files-found: error
+
+  publish:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          shopt -s nullglob
+          files=(dist/*)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No release artifacts found under dist/"
+            find dist -type f || true
+            exit 1
+          fi
+          gh release create "$TAG" "${files[@]}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Cloud Tunnel ${VERSION}" \
+            --generate-notes \
+            --target "$GITHUB_SHA"
